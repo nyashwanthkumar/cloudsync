@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cloud Task Manager</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #eef2f6;
+      color: #1f2933;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 50px 16px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 520px;
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: 0 14px 35px rgba(30, 41, 59, 0.12);
+      padding: 28px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .header {
+      margin-bottom: 22px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 26px;
+      color: #1f4e79;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      font-size: 14px;
+      color: #667085;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .stat-box {
+      flex: 1;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #667085;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1f2933;
+    }
+
+    .add-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 9px;
+      border: 1px solid #d0d5dd;
+      font-size: 14px;
+      outline: none;
+      background: #ffffff;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: #1f4e79;
+      box-shadow: 0 0 0 3px rgba(31, 78, 121, 0.12);
+    }
+
+    button {
+      padding: 12px 18px;
+      border-radius: 9px;
+      border: none;
+      background: #1f4e79;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #17375e;
+    }
+
+    .search {
+      margin-bottom: 18px;
+    }
+
+    .task-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .task-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 4px;
+      border-bottom: 1px solid #edf0f2;
+    }
+
+    .task-item:last-child {
+      border-bottom: none;
+    }
+
+    .task-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      border: 2px solid #98a2b3;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .checkbox.done {
+      background: #1f4e79;
+      border-color: #1f4e79;
+    }
+
+    .checkbox.done::after {
+      content: "✓";
+    }
+
+    .task-details {
+      min-width: 0;
+    }
+
+    .task-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1f2933;
+      word-break: break-word;
+    }
+
+    .task-name.done {
+      text-decoration: line-through;
+      color: #98a2b3;
+    }
+
+    .time {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #98a2b3;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .actions span {
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .edit {
+      color: #1f4e79;
+    }
+
+    .delete {
+      color: #d92d20;
+    }
+
+    .empty {
+      text-align: center;
+      color: #667085;
+      font-size: 14px;
+      padding: 28px 0 10px;
+    }
+
+    @media (max-width: 520px) {
+      .app {
+        padding: 22px;
+      }
+
+      .add-row {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .task-item {
+        align-items: flex-start;
+      }
+
+      .actions {
+        flex-direction: column;
+        gap: 6px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+    <div class="header">
+      <h2>Cloud Task Manager</h2>
+      <div class="subtitle">Manage daily tasks through a cloud-hosted Flask application</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-label">Total Tasks</div>
+        <div class="stat-value" id="total">0</div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-label">Completed</div>
+        <div class="stat-value" id="completed">0</div>
+      </div>
+    </div>
+
+    <div class="add-row">
+      <input id="taskInput" placeholder="Enter a new task">
+      <button onclick="addTask()">Add Task</button>
+    </div>
+
+    <input id="searchInput" class="search" placeholder="Search tasks..." oninput="loadTasks()">
+
+    <ul id="taskList" class="task-list"></ul>
+  </div>
+
+<script>
+const API = "http://ec2-13-60-47-39.eu-north-1.compute.amazonaws.com:5000";
+
+function addTask() {
+  const input = document.getElementById("taskInput");
+  const task = input.value.trim();
+
+  if (!task) return;
+
+  fetch(API + "/add", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({task: task})
+  }).then(() => {
+    input.value = "";
+    loadTasks();
+  });
+}
+
+function deleteTask(id) {
+  fetch(API + "/delete", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({id: id})
+  }).then(loadTasks);
+}
+
+function toggleTask(id) {
+  fetch(API + "/toggle", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({id: id})
+  }).then(loadTasks);
+}
+
+function editTask(id, currentName) {
+  const newName = prompt("Edit task:", currentName);
+
+  if (!newName || !newName.trim()) return;
+
+  fetch(API + "/edit", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({id: id, name: newName.trim()})
+  }).then(loadTasks);
+}
+
+function loadTasks() {
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const list = document.getElementById("taskList");
+
+  fetch(API + "/tasks")
+    .then(res => res.json())
+    .then(data => {
+      list.innerHTML = "";
+
+      const filtered = data.filter(task =>
+        task.name.toLowerCase().includes(search)
+      );
+
+      document.getElementById("total").innerText = data.length;
+      document.getElementById("completed").innerText =
+        data.filter(task => task.done).length;
+
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="empty">No tasks found</div>`;
+        return;
+      }
+
+      filtered.forEach(task => {
+        const li = document.createElement("li");
+        li.className = "task-item";
+
+        li.innerHTML = `
+          <div class="task-left">
+            <div class="checkbox ${task.done ? "done" : ""}"></div>
+
+            <div class="task-details">
+              <div class="task-name ${task.done ? "done" : ""}"></div>
+              <div class="time">${task.time || ""}</div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <span class="edit">Edit</span>
+            <span class="delete">Delete</span>
+          </div>
+        `;
+
+        li.querySelector(".task-name").innerText = task.name;
+        li.querySelector(".checkbox").onclick = () => toggleTask(task.id);
+        li.querySelector(".edit").onclick = () => editTask(task.id, task.name);
+        li.querySelector(".delete").onclick = () => deleteTask(task.id);
+
+        list.appendChild(li);
+      });
+    });
+}
+
+loadTasks();
+</script>
+
+</body>
+</html>
