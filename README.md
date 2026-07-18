@@ -1,6 +1,6 @@
 # Cloud Task Manager
 
-A simple cloud-hosted task management web app built during my Cloud Computing internship at Codtech IT Solutions Pvt. Ltd.
+A simple cloud-hosted task management web application.
 
 ## Tech Stack
 - Backend: Python (Flask) — hosted on AWS EC2
