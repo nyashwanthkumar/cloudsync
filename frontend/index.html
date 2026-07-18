@@ -1,279 +1,347 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Cloud Task Manager</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudSync</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+  * {
+    box-sizing: border-box;
+  }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: #eef2f6;
-      color: #1f2933;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 50px 16px;
-    }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #fbf6ef;
+    background-image: radial-gradient(#e8ddc9 1px, transparent 1px);
+    background-size: 22px 22px;
+    color: #2b2620;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 60px 16px;
+  }
 
-    .app {
-      width: 100%;
-      max-width: 520px;
-      background: #ffffff;
-      border-radius: 14px;
-      box-shadow: 0 14px 35px rgba(30, 41, 59, 0.12);
-      padding: 28px;
-      border: 1px solid #e5e7eb;
-    }
+  .app {
+    width: 100%;
+    max-width: 560px;
+    background: #ffffff;
+    border: 2px solid #2b2620;
+    border-radius: 20px 20px 18px 22px;
+    padding: 32px 34px;
+    box-shadow: 7px 9px 0px #2b2620;
+  }
 
-    .header {
-      margin-bottom: 22px;
-    }
+  .header-row {
+    margin-bottom: 22px;
+    position: relative;
+  }
 
-    h2 {
-      margin: 0;
-      font-size: 26px;
-      color: #1f4e79;
-      letter-spacing: 0;
-    }
+  h1 {
+    margin: 0 0 2px 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: #2b2620;
+    display: inline-block;
+  }
 
-    .subtitle {
-      margin-top: 6px;
-      font-size: 14px;
-      color: #667085;
-    }
+  h1 .dot {
+    color: #b85c38;
+  }
 
-    .stats {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 22px;
-    }
+  .subtitle {
+    font-size: 13px;
+    color: #8a8175;
+    font-style: italic;
+  }
 
-    .stat-box {
-      flex: 1;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 12px 14px;
-    }
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fbf6ef;
+    border: 2px solid #e0d6c6;
+    border-radius: 12px 10px 12px 10px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    transition: border-color 0.15s ease;
+  }
 
-    .stat-label {
-      font-size: 12px;
-      color: #667085;
-      margin-bottom: 4px;
-    }
+  .search-box:focus-within {
+    border-color: #b85c38;
+  }
 
-    .stat-value {
-      font-size: 18px;
-      font-weight: 600;
-      color: #1f2933;
-    }
+  .search-box svg {
+    width: 15px;
+    height: 15px;
+    color: #a89e8f;
+    flex-shrink: 0;
+  }
 
-    .add-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
+  .search {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 13px;
+    color: #2b2620;
+    outline: none;
+  }
 
-    input {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 9px;
-      border: 1px solid #d0d5dd;
-      font-size: 14px;
-      outline: none;
-      background: #ffffff;
-      transition: border 0.2s, box-shadow 0.2s;
-    }
+  /* progress bar */
+  .progress-wrap {
+    margin-bottom: 22px;
+  }
 
-    input:focus {
-      border-color: #1f4e79;
-      box-shadow: 0 0 0 3px rgba(31, 78, 121, 0.12);
-    }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #8a8175;
+    margin-bottom: 6px;
+  }
 
-    button {
-      padding: 12px 18px;
-      border-radius: 9px;
-      border: none;
-      background: #1f4e79;
-      color: white;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+  .progress-track {
+    height: 6px;
+    background: #ece3d6;
+    border-radius: 10px;
+    overflow: hidden;
+  }
 
-    button:hover {
-      background: #17375e;
-    }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #b85c38;
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.18) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.18) 75%, transparent 75%, transparent);
+    background-size: 10px 10px;
+    border-radius: 10px;
+    transition: width 0.4s ease;
+  }
 
-    .search {
-      margin-bottom: 18px;
-    }
+  /* input pill */
+  .add-box {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 2px solid #2b2620;
+    border-radius: 14px;
+    padding: 4px 4px 4px 14px;
+    margin-bottom: 12px;
+    transition: transform 0.15s ease;
+  }
 
-    .task-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+  .add-box:focus-within {
+    transform: translate(-2px, -2px);
+    box-shadow: 3px 3px 0px #2b2620;
+  }
 
-    .task-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 4px;
-      border-bottom: 1px solid #edf0f2;
-    }
+  .add-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    padding: 10px 0;
+    color: #2b2620;
+  }
 
-    .task-item:last-child {
-      border-bottom: none;
-    }
+  .add-box button {
+    border: none;
+    background: #b85c38;
+    color: #fff;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px 8px 10px 8px;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transform: rotate(-3deg);
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
 
-    .task-left {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      min-width: 0;
-    }
+  .add-box button:hover {
+    background: #a34d2c;
+    transform: rotate(0deg) scale(1.04);
+  }
 
-    .checkbox {
-      width: 18px;
-      height: 18px;
-      margin-top: 2px;
-      border: 2px solid #98a2b3;
-      border-radius: 5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      color: white;
-      font-size: 12px;
-      font-weight: bold;
-    }
+  .add-box button:active {
+    transform: rotate(0deg) scale(0.88);
+  }
 
-    .checkbox.done {
-      background: #1f4e79;
-      border-color: #1f4e79;
-    }
+  .search::placeholder {
+    color: #a89e8f;
+  }
 
-    .checkbox.done::after {
-      content: "✓";
-    }
+  /* task list */
+  .task-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
 
-    .task-details {
-      min-width: 0;
-    }
+  .task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 4px;
+    border-bottom: 1px dashed #e0d6c6;
+    animation: slideIn 0.25s ease;
+  }
 
-    .task-name {
-      font-size: 15px;
-      font-weight: 500;
-      color: #1f2933;
-      word-break: break-word;
-    }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
 
-    .task-name.done {
-      text-decoration: line-through;
-      color: #98a2b3;
-    }
+  .task-item.removing {
+    animation: slideOut 0.2s ease forwards;
+  }
 
-    .time {
-      margin-top: 4px;
-      font-size: 12px;
-      color: #98a2b3;
-    }
+  @keyframes slideOut {
+    to { opacity: 0; transform: translateX(12px); height: 0; padding: 0; margin: 0; }
+  }
 
-    .actions {
-      display: flex;
-      gap: 10px;
-      font-size: 13px;
-      flex-shrink: 0;
-    }
+  .task-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+  }
 
-    .actions span {
-      cursor: pointer;
-      font-weight: 500;
-    }
+  .checkbox {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    border: 2px solid #2b2620;
+    border-radius: 7px 5px 7px 5px;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+  }
 
-    .edit {
-      color: #1f4e79;
-    }
+  .checkbox svg {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 20px;
+    height: 20px;
+  }
 
-    .delete {
-      color: #d92d20;
-    }
+  .checkbox svg path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+    transition: stroke-dashoffset 0.25s ease;
+  }
 
-    .empty {
-      text-align: center;
-      color: #667085;
-      font-size: 14px;
-      padding: 28px 0 10px;
-    }
+  .checkbox.done {
+    background: #b85c38;
+    border-color: #b85c38;
+  }
 
-    @media (max-width: 520px) {
-      .app {
-        padding: 22px;
-      }
+  .checkbox.done svg path {
+    stroke-dashoffset: 0;
+  }
 
-      .add-row {
-        flex-direction: column;
-      }
+  .task-name {
+    font-size: 14px;
+    color: #2b2620;
+    word-break: break-word;
+  }
 
-      button {
-        width: 100%;
-      }
+  .task-name.done {
+    text-decoration: line-through;
+    color: #b3a999;
+  }
 
-      .task-item {
-        align-items: flex-start;
-      }
+  .time {
+    margin-top: 2px;
+    font-size: 11px;
+    font-family: "Consolas", "Courier New", monospace;
+    color: #a89e8f;
+  }
 
-      .actions {
-        flex-direction: column;
-        gap: 6px;
-      }
-    }
-  </style>
+  .actions {
+    display: flex;
+    gap: 6px;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  .actions span {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease;
+  }
+
+  .edit {
+    color: #b85c38;
+  }
+
+  .edit:hover {
+    border-color: #b85c38;
+  }
+
+  .delete {
+    color: #8a8175;
+  }
+
+  .delete:hover {
+    border-color: #8a8175;
+  }
+
+  .empty {
+    text-align: center;
+    color: #a89e8f;
+    font-size: 13px;
+    padding: 24px 0 5px;
+  }
+</style>
 </head>
 
 <body>
 
   <div class="app">
-    <div class="header">
-      <h2>Cloud Task Manager</h2>
-      <div class="subtitle">Manage daily tasks through a cloud-hosted Flask application</div>
+    <div class="header-row">
+      <h1>CloudSync<span class="dot">.</span></h1>
+      <div class="subtitle">Organize your work, anywhere.</div>
     </div>
 
-    <div class="stats">
-      <div class="stat-box">
-        <div class="stat-label">Total Tasks</div>
-        <div class="stat-value" id="total">0</div>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="searchInput" class="search" placeholder="Search tasks..." oninput="loadTasks()">
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="total">0 tasks</span>
+        <span id="completed">0 done</span>
       </div>
-
-      <div class="stat-box">
-        <div class="stat-label">Completed</div>
-        <div class="stat-value" id="completed">0</div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
       </div>
     </div>
 
-    <div class="add-row">
-      <input id="taskInput" placeholder="Enter a new task">
-      <button onclick="addTask()">Add Task</button>
+    <div class="add-box">
+      <input id="taskInput" placeholder="Add a task..." onkeydown="if(event.key==='Enter') addTask()">
+      <button onclick="addTask()">+</button>
     </div>
-
-    <input id="searchInput" class="search" placeholder="Search tasks..." oninput="loadTasks()">
 
     <ul id="taskList" class="task-list"></ul>
   </div>
 
 <script>
-const API = "http://ec2-13-60-47-39.eu-north-1.compute.amazonaws.com:5000";
+const API = "http://13.60.249.151:5000";
 
 function addTask() {
   const input = document.getElementById("taskInput");
@@ -291,12 +359,15 @@ function addTask() {
   });
 }
 
-function deleteTask(id) {
-  fetch(API + "/delete", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({id: id})
-  }).then(loadTasks);
+function deleteTask(id, li) {
+  li.classList.add("removing");
+  setTimeout(() => {
+    fetch(API + "/delete", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({id: id})
+    }).then(loadTasks);
+  }, 180);
 }
 
 function toggleTask(id) {
@@ -332,12 +403,15 @@ function loadTasks() {
         task.name.toLowerCase().includes(search)
       );
 
-      document.getElementById("total").innerText = data.length;
-      document.getElementById("completed").innerText =
-        data.filter(task => task.done).length;
+      const doneCount = data.filter(task => task.done).length;
+      const pct = data.length ? Math.round((doneCount / data.length) * 100) : 0;
+
+      document.getElementById("total").innerText = `${data.length} task${data.length !== 1 ? "s" : ""}`;
+      document.getElementById("completed").innerText = `${doneCount} done`;
+      document.getElementById("progressFill").style.width = pct + "%";
 
       if (filtered.length === 0) {
-        list.innerHTML = `<div class="empty">No tasks found</div>`;
+        list.innerHTML = `<div class="empty">nothing here yet</div>`;
         return;
       }
 
@@ -347,24 +421,26 @@ function loadTasks() {
 
         li.innerHTML = `
           <div class="task-left">
-            <div class="checkbox ${task.done ? "done" : ""}"></div>
+            <div class="checkbox ${task.done ? "done" : ""}">
+              <svg viewBox="0 0 20 20"><path d="M4 10 L8 14 L16 5"></path></svg>
+            </div>
 
-            <div class="task-details">
+            <div>
               <div class="task-name ${task.done ? "done" : ""}"></div>
               <div class="time">${task.time || ""}</div>
             </div>
           </div>
 
           <div class="actions">
-            <span class="edit">Edit</span>
-            <span class="delete">Delete</span>
+            <span class="edit">edit</span>
+            <span class="delete">delete</span>
           </div>
         `;
 
         li.querySelector(".task-name").innerText = task.name;
         li.querySelector(".checkbox").onclick = () => toggleTask(task.id);
         li.querySelector(".edit").onclick = () => editTask(task.id, task.name);
-        li.querySelector(".delete").onclick = () => deleteTask(task.id);
+        li.querySelector(".delete").onclick = () => deleteTask(task.id, li);
 
         list.appendChild(li);
       });
